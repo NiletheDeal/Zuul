@@ -1,10 +1,18 @@
 #ifndef ITEM
 #define ITEM
+
 #include <iostream>
 #include <cstring>
 
 using namespace std;
-//Define all of the fields and contructor
+
 class Item {
-  Item();
-  
+ public:
+  Item(char Name, int ID);
+  char* getName();
+  int getID();
+ private:
+  char name[30];
+  int ID;
+};
+#endif
