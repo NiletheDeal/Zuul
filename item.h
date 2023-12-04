@@ -8,11 +8,9 @@ using namespace std;
 
 class Item {
  public:
-  Item(char Name, int ID);
-  char* getName();
-  int getID();
+  Item(char* Name);
+  char* getItemName();
  private:
   char name[30];
-  int ID;
 };
 #endif

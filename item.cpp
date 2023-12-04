@@ -4,17 +4,12 @@
 
 using namepsace std;
 
-Item::Item(char Name, int newID) {
+Item::Item(char Name) {
   for (int i = 0; i<30; i++) {
     title[i] = '\0';
   }
   strcpy(name, Name);
-  ID = newID;
 }
-char* Item::getName() {
+char* Item::getItemName() {
   return name*;
-}
-
-int Item::getID() {
-  return ID;
 }

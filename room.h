@@ -3,22 +3,26 @@
 
 #include <iostream>
 #include <cstring>
+#include <vector>
+#include "item.h"
 
 using namespace std;
 
 class Room {
  public:
-  Room(char* newDescription, int newID, int newItem);
+  Room(char newName, char newDescription);
   char* getDescription();
-  int getID();
-  int getItem();
+  char* getName();
+  vector<item*>* getRoomInventory(); 
   map<int, char*>* getExits();
 
-  void setExit(map<int, char*>);
+  void setExit(map<int, char*> newExit);
+  void setItem(Item* newItem);
+  
  private:
-  char* description;
+  char description[1000];
   map<int, char*> exits;
-  int ID;
-  int item;
+  char name[80];
+  vector<item*> roomInventory;
 };
 #endif
