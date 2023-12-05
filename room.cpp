@@ -5,10 +5,10 @@
 
 using namespace std;
 
-Room::Room(char newName, char newDescription) {
+Room::Room(char newName, char newDescription, bool status) {
   strcmp(name, newName);
   strcmp(description, newDescription);
-  
+  clearstatus = status;
 }
 
 char* Room::getDescription() {
