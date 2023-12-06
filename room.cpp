@@ -15,7 +15,7 @@ char* Room::getDescription() {
   return description*;
 }
 
-map<int, char*>* getExits() {
+map<char*, room*>* getExits() {
   return exits;
 }
 
@@ -27,8 +27,8 @@ vector<item*>* getRoomInventory() {
   return roomInventory*;
 }
 
-void setExit(map<int, char*> newExit) {
-  exits = newExit;
+void setExit(map<char*, room*>* newExit) {
+  exits = *newExit;
 }
 void setItem(Item* newItem) {
   roomInventory.push_back(newItem);
