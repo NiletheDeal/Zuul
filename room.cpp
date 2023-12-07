@@ -32,3 +32,7 @@ void setExit(map<char*, room*>* newExit) {
 }
 void setItem(Item* newItem) {
   roomInventory.push_back(newItem);
+}
+void addExit(char* direction, room* destination) {
+  exits.insert(direction, destination);
+}

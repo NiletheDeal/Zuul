@@ -11,7 +11,9 @@ int main {
   
   bool stillPlaying = true;
   while (stillPlaying == true) {
-
+    cout << "Welcome to Dungeon Destroyer! You are trapped in a dungeon and you must collect all the items, have them in certain rooms to traverse through the dungeon. If you reach the boss room with all the items necessary (sword, shield, bow, potion)" << endl;
+    cout << "The commands available to you are GO to move, GET to pickup items, DROP to drop items, and QUIT to quit." << endl;
+    
     
   }
 }
