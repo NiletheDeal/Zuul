@@ -22,7 +22,7 @@ class Room {
   void addExit(char* direction, room* destination);
  private:
   char description[1000];
-  map<int, char*> exits;
+  map<char*, room*> exits;
   char name[80];
   vector<item*> roomInventory;
 };
