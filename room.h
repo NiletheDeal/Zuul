@@ -18,7 +18,8 @@ class Room {
 
   void setExit(map<int, char*> newExit);
   void setItem(Item* newItem);
-  
+
+  void addExit(char* direction, room* destination);
  private:
   char description[1000];
   map<int, char*> exits;
