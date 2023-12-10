@@ -11,6 +11,6 @@ class Item {
   Item(char* Name);
   char* getItemName();
  private:
-  char name[30];
+  char* name;
 };
 #endif

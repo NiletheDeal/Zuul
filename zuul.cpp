@@ -7,9 +7,16 @@
 
 using namespace std;
 
+void setRoom(vector<room*>* rooms);
+void printRoom(vector<room*>* rooms, char currentRoom[]);
+void printInventory(vector<item*>* playerInventory);
+void getItem(vector<room*>* rooms, char currentRoom[], char itemName[], vector<item*>* playerInventory);
+void dropItem(vector<room*>* rooms, char currentRoom[], char itemName[], vector<item*>* playerInventory);
+char* move(vector<room*>* rooms, char currentRoom, char direction[]);
+
 int main {
   vector<room*> roomsList;
-  vector<Item*> Inventory;
+  vector<Item*> inventory;
   setRoom(&roomsList);
   
   
@@ -22,7 +29,7 @@ int main {
   cout << "Welcome to Dungeon Destroyer! You are trapped in a dungeon and you must collect all the items, have them in certain rooms to traverse through the dungeon. If you reach the boss room with all the items necessary (sword, shield, bow, potion)" << endl;
   cout << "The commands available to you are GO, GET, DROP, INVENTORY, QUIT." << endl;
   while (stillPlaying == true) {
-    
+    printRooms(&roomsList, currentRoom);
     
     
   }
@@ -131,7 +138,7 @@ void setRoom(vector<room*>* rooms) {
   tempMap.clear();
 
   tempMap.insert(north, tunnel5);
-  emptyRoom->setExits(tempMap*);
+   emptyRoom->setExits(tempMap*);
   tempMap.clear();
 
   tempMap.insert(west, tunnel5);
@@ -222,7 +229,22 @@ void dropItem(vector<room*>* rooms, char currentRoom[], char itemName[], vector<
   }
   cout << "You do not have that Item." << endl;
 } 
-void move(vector<room*>* rooms, int currentRoom, char direction[]) {
+char* move(vector<room*>* rooms, char currentRoom, char direction[]) {
   vector<room*>::iterator move;
   for(move = rooms->begin(); move != rooms->end(); move++) {
-    
+    if(currentRoom == (*move)->getName()) {
+      map<char*, room*> exits;
+      exits = *(*move)->getExits();
+      map<char*, room*>::const_iterator map;
+      for(map = exits.begin(); map != exits.end(); ++map) {
+	if(strcmp(*(map->first), direction) == 0) {
+	  char* destination;
+	  destination = (*map->second)->getName;
+	  return destination
+	}
+      }
+    }
+  }
+  char* empty = "null";
+  return empty;
+}

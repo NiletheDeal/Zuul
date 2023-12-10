@@ -4,26 +4,28 @@
 #include <iostream>
 #include <cstring>
 #include <vector>
+#include <map>
 #include "item.h"
 
 using namespace std;
 
 class Room {
  public:
-  Room(char newName, char newDescription);
+  Room(char* newName, char* newDescription, bool status);
   char* getDescription();
   char* getName();
-  vector<item*>* getRoomInventory(); 
-  map<int, char*>* getExits();
+  vector<Item*>* getRoomInventory(); 
+  map<char*, Room*>* getExits();
 
-  void setExit(map<int, char*> newExit);
+  void setExit(map<char*, Room*> newExit);
   void setItem(Item* newItem);
 
-  void addExit(char* direction, room* destination);
+  void addExit(char* direction, Room* destination);
  private:
-  char description[1000];
-  map<char*, room*> exits;
-  char name[80];
-  vector<item*> roomInventory;
+  char* description;
+  map<char*, Room*> exits;
+  char* name;
+  vector<Item*> roomInventory;
+  bool clearStatus;
 };
 #endif

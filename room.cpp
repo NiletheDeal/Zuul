@@ -5,34 +5,34 @@
 
 using namespace std;
 
-Room::Room(char newName, char newDescription, bool status) {
-  strcmp(name, newName);
-  strcmp(description, newDescription);
-  clearstatus = status;
+Room::Room(char* newName, char* newDescription, bool status) {
+  name = newName;
+  description = newDescription;
+  clearStatus = status;
 }
 
 char* Room::getDescription() {
-  return description*;
+  return description;
 }
 
-map<char*, room*>* getExits() {
-  return exits;
+map<char*, Room*>* Room::getExits() {
+  return &exits;
 }
 
-char* getName() {
-  return name*;
+char* Room::getName() {
+  return name;
 }
 
-vector<item*>* getRoomInventory() {
-  return roomInventory*;
+vector<Item*>* Room::getRoomInventory() {
+  return &roomInventory;
 }
 
-void setExit(map<char*, room*>* newExit) {
-  exits = *newExit;
+void Room::setExit(map<char*, Room*> newExit) {
+  exits = newExit;
 }
-void setItem(Item* newItem) {
+void Room::setItem(Item* newItem) {
   roomInventory.push_back(newItem);
 }
-void addExit(char* direction, room* destination) {
-  exits.insert(direction, destination);
+void Room::addExit(char* direction, Room* destination) {
+  exits.insert(*direction, *destination);
 }
