@@ -7,143 +7,238 @@
 
 using namespace std;
 
-void setRoom(vector<room*>* rooms);
-void printRoom(vector<room*>* rooms, char currentRoom[]);
-void printInventory(vector<item*>* playerInventory);
-void getItem(vector<room*>* rooms, char currentRoom[], char itemName[], vector<item*>* playerInventory);
-void dropItem(vector<room*>* rooms, char currentRoom[], char itemName[], vector<item*>* playerInventory);
-char* move(vector<room*>* rooms, char currentRoom, char direction[]);
+void setRoom(vector<Room*> &rooms);
+void printRoom(vector<Room*> &rooms, char* &currentRoom);
+void printInventory(vector<Item*> &playerInventory);
+void getItem(vector<Room*> &rooms, char* &currentRoom, char* &itemName, vector<Item*> &playerInventory);
+void dropItem(vector<Room*> &rooms, char* &currentRoom, char* &itemName, vector<Item*> &playerInventory);
+char* move(vector<Room*> &rooms, char* &currentRoom, char* &direction);
+bool inventoryContains(vector<Item*> &playerInventory, char* &itemName);
 
-int main {
-  vector<room*> roomsList;
+int main() {
+  vector<Room*> roomsList;
   vector<Item*> inventory;
-  setRoom(&roomsList);
+  setRoom(roomsList);
+  char* potentialDescription = new char[200];
+  char* potentialItemName = new char[10];
   
   
   bool stillPlaying = true;
-  char[10] command;
-  char[10] commandInput;
-  char[80] currentRoom = "Dungeon Entrance.";
+  char command[10];
+  char* commandInput = new char[10];
+  char* currentRoom = new char[25];
+  strcpy(currentRoom, "Dungeon Entrance");
   
-  
-  cout << "Welcome to Dungeon Destroyer! You are trapped in a dungeon and you must collect all the items, have them in certain rooms to traverse through the dungeon. If you reach the boss room with all the items necessary (sword, shield, bow, potion)" << endl;
+  cout << "Welcome to Dungeon Destroyer! You are trapped in a dungeon and you must collect all the items, have them in certain rooms to traverse through the dungeon. If you reach the boss room with all the items necessary (sword, bomb, shield, bow, potion)" << endl;
   cout << "The commands available to you are GO, GET, DROP, INVENTORY, QUIT." << endl;
   while (stillPlaying == true) {
-    printRooms(&roomsList, currentRoom);
-    
-    
+    vector<Room*>::iterator room;
+    for(room = roomsList.begin(); room != roomsList.end(); room++) {//find the room the player is in
+      if(strcmp(currentRoom,(*room)->getName()) == 0) {//this is the room the player is in
+	if(strcmp((*room)->getName(), "Laboratory") == 0 && (*room)->getStatus() == 0) {//if the room the player is in is the Laboratory and the laboratory isn't cleared
+	  strcpy(potentialItemName, "Sword");
+	  if(inventoryContains(inventory, potentialItemName) == true) {//if the player also has the sword, then they clear the room
+	    strcpy(potentialDescription, "The Beheaded Corpses of Zombies litter the floor, but the room is atleast safe.");
+	    (*room)->clearRoom(potentialDescription);
+	  }
+	}
+	else if(strcmp((*room)->getName(), "Graveyard") == 0 && (*room)->getStatus() == 0) {//if the room the player is in is the graveyard and the graveyard isn't cleared
+	  strcpy(potentialItemName, "Shield");
+	  if(inventoryContains(inventory, potentialItemName) == true) {//if the player also has the Shield, then they clear the room
+	    strcpy(potentialDescription, "The Beheaded Corpses of Zombies litter the floor, but the room is atleast safe.");
+	    (*room)->clearRoom(potentialDescription);//change description and clear the room
+	  }
+	}
+	else if(strcmp((*room)->getName(), "Boss Room") == 0 && (*room)->getStatus() == 0) { //Boss Room Clear Condition
+	  
+	
+      }
+    }
+    printRoom(roomsList, currentRoom);
+    cout << "What would you like to do? (GO, GET, DROP, INVENTORY, QUIT)" << endl;
+    cin >> command;
+    if(strcmp(command, "GO") == 0) {
+      cout << "Which Direction would you like to go of the exits?" << endl;
+      cin >> commandInput;
+      char* destination = move(roomsList, currentRoom, commandInput);
+      cout << destination << endl;
+      if(strcmp(destination, " ") != 0) {
+	strcpy(currentRoom, destination);
+      }
+      else {
+	cout << "There is no exit there unless you got some crazy super powers." << endl;
+      }
+    }
+    else if(strcmp(command, "GET") == 0) {
+      cout << "What Item would you like to pick up?" << endl;
+      cin >> commandInput;
+      getItem(roomsList, currentRoom, commandInput, inventory);
+    }
+    else if(strcmp(command, "DROP") == 0) {
+     cout << "What Item would you like to drop?" << endl;
+     cin >> commandInput;
+     dropItem(roomsList, currentRoom, commandInput, inventory);
+    }
+    else if(strcmp(command, "INVENTORY") == 0) {
+      printInventory(inventory);
+    }
+    else if(strcmp(command, "QUIT") == 0) {
+      return 0;
+    }
   }
 }
-void setRoom(vector<room*>* rooms) {
+
+void setRoom(vector<Room*> &rooms) {
   char* north = (char*)("north");
   char* east = (char*)("east");
   char* south = (char*)("south");
   char* west = (char*)("west");
-  map<char*, room*> tempMap;
-  
-  item* sword = new item("Sword")
-  room* entrance = new room("Dungeon Entrance", "You must clear the dungeon to escape!", true);
+  map<char*, Room*> tempMap;
+
+  char* name = new char[25];
+  strcpy(name, "Sword");
+  Item* sword = new Item(name);
+  strcpy(name, "Dungeon Entrance");
+  char* description = new char[200];
+  strcpy(description, "You must clear the dungeon to escape!");
+  Room* entrance = new Room(name, description, true);
   entrance->setItem(sword);
+
+  strcpy(name, "Tunnel 1");
+  strcpy(description, "Continue ahead in your journey!");
   
-  room* tunnel1 = new room("Tunnel", "Continue ahead in your journey!", true);
-  
-  room* specialTunnel = new room("Tunnel", "There is a blocked entrance to the East if only you could blow up the blockade!", false);
+  Room* tunnel1 = new Room(name, description, true);
 
-  room* tunnel2 = new room("Tunnel", "Continue ahead in your journey!", true);
+  strcpy(name, "Tunnel 2");
+  Room* tunnel2 = new Room(name, description, true);
 
-  room* tunnel3 = new room("Tunnel", "Continue ahead in your journey!", true);
+  strcpy(name, "Tunnel 3");
+  Room* tunnel3 = new Room(name, description, true);
 
-  room* tunnel4 = new room("Tunnel", "Continue ahead in your journey!", true);
+  strcpy(name, "Tunnel 4");
+  Room* tunnel4 = new Room(name, description, true);
 
-  room* tunnel5 = new room("Tunnel", "Continue ahead in your journey!", true);
+  strcpy(name, "Tunnel 5");
+  Room* tunnel5 = new Room(name, description, true);
 
-  room* tunnel6 = new room("Tunnel", "Continue ahead in your journey!", true);
+  strcpy(name, "Tunnel 6");
+  Room* tunnel6 = new Room(name, description, true);
 
-  room* laboratory = new room("Laboratory", "The laboratory is overrun with zombies, if you have a sword you could clear the room!", false);
-  item* bomb = new item("Bomb");
+  strcpy(name, "Special Tunnel");
+  strcpy(description, "Don't forget to explore the southern path before taking the eastern path");
+  Room* specialTunnel = new Room(name, description, true);
+
+  strcpy(name, "Laboratory");
+  strcpy(description, "The laboratory is overrun with zombies, if you have a sword you could clear the room!");
+  Room* laboratory = new Room(name, description, false);
+  strcpy(name, "Bomb");
+  Item* bomb = new Item(name);
   laboratory->setItem(bomb);
 
-  room* targetRange = new room("Shooting Range", "There is a large chasm with targets on the other side. If you had a bow you could shoot the targets and open the secret exit.", false);
+  strcpy(name, "Shooting Range");
+  strcpy(description, "Grab all the items on this level before going east");
+  Room* targetRange = new Room(name, description, true);
 
-  room* storageRoom = new room("Store Room", "Its old and musty, but their could be something valueable if you looked around.", true);
-  item* shield = new item("Shield");
-  storageRoom1->setItem(shield);
+  strcpy(name, "Store Room");
+  strcpy(description, "Its old and musty, but their could be something valueable to you if you looked around.");
+  Room* storageRoom = new Room(name, description, true);
+  strcpy(name, "Shield");
+  Item* shield = new Item(name);
+  storageRoom->setItem(shield);
 
-  room* graveyard = new room("Graveyard", "It's overrun by skeletons! If you had a shield to block the arrows you could clear out the room." false);
-  item* bow = new item("Bow");
+  strcpy(name, "Graveyard");
+  strcpy(description, "It's overrun by skeletons! If you had a shield to block the arrows you could clear out the room.");
+  Room* graveyard = new Room(name, description, false);
+  strcpy(name, "Bow");
+  Item* bow = new Item(name);
   graveyard->setItem(bow);
 
-  room* shrine = new room("Shrine", "It's a safe Haven!", true);
-  item* potion = new item("Potion");
+  strcpy(name, "Shrine");
+  strcpy(description, "It's a safe Haven!");
+  Room* shrine = new Room(name, description, true);
+  strcpy(name, "Potion");
+  Item* potion = new Item(name);
   shrine->setItem(potion);
 
-  room* emptyRoom = new room("Empty Room", "It just an empty room. Why is this here. Its almost as if this is just here to complete a requirement of the dungen creation", true);
+  strcpy(name, "Empty Room");
+  strcpy(description, "It just an empty room. Why is this here? Its almost as if this is just here to complete a requirement of the dungen creation.");
+  Room* emptyRoom = new Room(name, description, true);
 
-  room* bossRoom = new room("Boss Room", "You need all the weapons you have collected on your journey to beat the boss and escape!", false);
+  strcpy(name, "Boos Room");
+  strcpy(description, "You need all the weapons you have collected on your journey to beat the boss and escape!");
+  Room* bossRoom = new Room(name, description, false);
 
-  tempMap.insert(south, tunnel1);
-  entrance->setExits(tempMap*);
+  tempMap.insert(pair<char*, Room*>(south, tunnel1));
+  entrance->setExits(tempMap);
   tempMap.clear();
 
-  tempMap.insert(north, entrance);
-  tempMap.insert(south, specialTunnel);
-  tunnel1->setExits(tempMap*);
+  tempMap.insert(pair<char*, Room*>(north, entrance));
+  tempMap.insert(pair<char*, Room*>(south, specialTunnel));
+  tunnel1->setExits(tempMap);
   tempMap.clear();
 
-  tempMap.insert(north, tunnel1);
-  tempMap.insert(south, tunnel2);
-  specialTunnel->setExits(tempMap*);
+  tempMap.insert(pair<char*, Room*>(north, tunnel1));
+  tempMap.insert(pair<char*, Room*>(south, tunnel2));
+  tempMap.insert(pair<char*, Room*>(east, targetRange));
+  specialTunnel->setExits(tempMap);
   tempMap.clear();
 
-  tempMap.insert(north, specialTunnel);
-  tempMap.insert(south, laboratory);
-  tunnel2->setExits(tempMap*);
+  tempMap.insert(pair<char*, Room*>(north, specialTunnel));
+  tempMap.insert(pair<char*, Room*>(south, laboratory));
+  tunnel2->setExits(tempMap);
   tempMap.clear();
 
-  tempMap.insert(north, tunnel2);
-  laboratory->setExits(tempMap*);
+  tempMap.insert(pair<char*, Room*>(north, tunnel2));
+  laboratory->setExits(tempMap);
   tempMap.clear();
 
-  tempMap.insert(north, tunnel3);
-  tempMap.insert(south, tunnel4);
-  targetRange->setExits(tempMap*);
+  tempMap.insert(pair<char*, Room*>(north, tunnel3));
+  tempMap.insert(pair<char*, Room*>(south, tunnel4));
+  tempMap.insert(pair<char*, Room*>(west, specialTunnel));
+  tempMap.insert(pair<char*, Room*>(east, tunnel5));
+  targetRange->setExits(tempMap);
   tempMap.clear();
 
-  tempMap.insert(north, storageRoom);
-  tempMap.insert(south, targetRange);
-  tunnel3->setExits(tempMap*);
+  tempMap.insert(pair<char*, Room*>(north, storageRoom));
+  tempMap.insert(pair<char*, Room*>(south, targetRange));
+  tunnel3->setExits(tempMap);
   tempMap.clear();
 
-  tempMap.insert(south, tunnel3);
-  storageRoom->setExits(tempMap*);
+  tempMap.insert(pair<char*, Room*>(south, tunnel3));
+  storageRoom->setExits(tempMap);
   tempMap.clear();
 
-  tempMap.insert(north, targetRange);
-  tempMap.insert(south, graveyard);
-  tunnel4->setExits(tempMap*);
+  tempMap.insert(pair<char*, Room*>(north, targetRange));
+  tempMap.insert(pair<char*, Room*>(south, graveyard));
+  tunnel4->setExits(tempMap);
   tempMap.clear();
 
-  tempMap.insert(north, tunnel4);
-  graveyard->setExits(tempMap*);
+  tempMap.insert(pair<char*, Room*>(north, tunnel4));
+  graveyard->setExits(tempMap);
   tempMap.clear();
 
-  tempMap.insert(north, shrine);
-  tempMap.insert(south, emptyRoom);
-  tempMap.insert(east, tunnel6);
-  tunnel5->setExits(tempmap*);
+  tempMap.insert(pair<char*, Room*>(north, shrine));
+  tempMap.insert(pair<char*, Room*>(south, emptyRoom));
+  tempMap.insert(pair<char*, Room*>(east, tunnel6));
+  tempMap.insert(pair<char*, Room*>(west, targetRange));
+  tunnel5->setExits(tempMap);
   tempMap.clear();
 
-  tempMap.insert(south, tunnel5);
-  shrine->setExits(tempMap*);
+  tempMap.insert(pair<char*, Room*>(south, tunnel5));
+  shrine->setExits(tempMap);
   tempMap.clear();
 
-  tempMap.insert(north, tunnel5);
-   emptyRoom->setExits(tempMap*);
+  tempMap.insert(pair<char*, Room*>(north, tunnel5));
+  emptyRoom->setExits(tempMap);
   tempMap.clear();
 
-  tempMap.insert(west, tunnel5);
-  tempMap.insert(east, bossRoom);
-  tunnel6->setExits(tempMap*);
+  tempMap.insert(pair<char*, Room*>(west, tunnel5));
+  tempMap.insert(pair<char*, Room*>(east, bossRoom));
+  tunnel6->setExits(tempMap);
+  tempMap.clear();
+
+  tempMap.insert(pair<char*, Room*>(west, tunnel6));
+  bossRoom->setExits(tempMap);
   tempMap.clear();
 
   rooms.push_back(entrance);
@@ -161,24 +256,27 @@ void setRoom(vector<room*>* rooms) {
   rooms.push_back(emptyRoom);
   rooms.push_back(tunnel6);
   rooms.push_back(bossRoom);
+  cout << "Done intializing" << endl;
 }
-void printRoom(vector<room*>* rooms, char currentRoom[]) {
+void printRoom(vector<Room*> &rooms, char* &currentRoom) {
   vector<Room*>::iterator room;
-  for(room = rooms->begin(); room != rooms->end(); room++) {
-    if(currentRoom == (*room)->getName()) {
-      cout << "You are in the " << (*room)->getName() << endl;
+  for(room = rooms.begin(); room != rooms.end(); room++) {
+    if(strcmp(currentRoom,(*room)->getName()) == 0) {
+      cout << "You are in the " << (*room)->getName() << "." << endl;
       cout << (*room)->getDescription() << endl;
-      map<char*, room*>::iterator exit;
+      map<char*, Room*>::iterator exit;
+      cout << endl;
+      cout << "Exits:" << endl;
       for(exit = (*room)->getExits()->begin(); exit != (*room)->getExits()->end(); exit++) {
-	cout << exit->first << " ";
+	cout << " " << exit->first << endl;
       }
       cout << endl;
 
-      cout << " Items in this room: ";
+      cout << "Items in this room: " << endl;;
       int itemCount = 0;
-      vector<item*>::iterator items;
+      vector<Item*>::iterator items;
       for(items = (*room)->getRoomInventory()->begin(); items != (*room)->getRoomInventory()->end(); items++){
-	cout <<(*item)->getItemName();
+	cout << " " << (*items)->getItemName() << endl;
 	itemCount++;
       }
       if (itemCount == 0) {
@@ -190,22 +288,23 @@ void printRoom(vector<room*>* rooms, char currentRoom[]) {
     }
   }
 }
-void printInventory(vector<item*>* playerInventory) {
-  vecotr<item*>::iterator inven;
-  for(inven = (*playerInventory)->begin(); inven != (*playerInventory)->end(); inven++) {
-    cout << (*inven)->getItemName() << " ";
+void printInventory(vector<Item*> &playerInventory) {
+  vector<Item*>::iterator inven;
+  cout << "You Have: " << endl;
+  for(inven = playerInventory.begin(); inven != playerInventory.end(); inven++) {
+    cout << " " << (*inven)->getItemName() << endl;
   }
   cout << endl;
 }
-void getItem(vector<room*>* rooms, char currentRoom[], char itemName[], vector<item*>* playerInventory) {
+void getItem(vector<Room*> &rooms, char* &currentRoom, char* &itemName, vector<Item*> &playerInventory) {
   vector<Room*>::iterator room;
-  for(room = rooms->begin(); room != rooms->end(); room++) {
-    if(currentRoom == (*room)->getName()) {
-      vector<item*>::iterator roomInven;
+  for(room = rooms.begin(); room != rooms.end(); room++) {
+    if(strcmp(currentRoom,(*room)->getName()) == 0) {
+      vector<Item*>::iterator roomInven;
       for(roomInven = (*room)->getRoomInventory()->begin(); roomInven != (*room)->getRoomInventory()->end(); roomInven++) {
-	if(itemName == (*roomInven)->getItemName()) {
-	  playerInventory->push_back(roomInven);
-	  (*room)->roomInventory.erase(roomInven);
+	if(strcmp(itemName, (*roomInven)->getItemName()) == 0) {
+	  playerInventory.push_back(*roomInven);
+	  (*room)->removeItem(roomInven);
 	  return;
 	}
       }
@@ -213,15 +312,15 @@ void getItem(vector<room*>* rooms, char currentRoom[], char itemName[], vector<i
   }
   cout << "That item is not here." << endl;
 }
-void dropItem(vector<room*>* rooms, char currentRoom[], char itemName[], vector<item*>* playerInventory) {
+void dropItem(vector<Room*> &rooms, char* &currentRoom, char* &itemName, vector<Item*> &playerInventory) {
  vector<Room*>::iterator room;
-  for(room = rooms->begin(); room != rooms->end(); room++) {
-    if(currentRoom == (*room)->getName()) {
-      vector<item*>::iterator playerInven;
-      for(playerInven = (*playerInventory)->begin(); playerInven != (*playerInventory)->end(); roomInven++) {
-	if(itemName == (playerInven)->getItemName()) {
-	  (*room)->roomInventory.push_back(playerInven);
-	  playerInventory->erase(roomInven);
+  for(room = rooms.begin(); room != rooms.end(); room++) {
+    if(strcmp(currentRoom,(*room)->getName()) == 0) {
+      vector<Item*>::iterator playerInven;
+      for(playerInven = playerInventory.begin(); playerInven != playerInventory.end(); playerInven++) {
+	if(strcmp(itemName, (*playerInven)->getItemName()) == 0) {
+	  (*room)->setItem(*playerInven);
+	  playerInventory.erase(playerInven);
 	  return;
 	}
       }
@@ -229,22 +328,32 @@ void dropItem(vector<room*>* rooms, char currentRoom[], char itemName[], vector<
   }
   cout << "You do not have that Item." << endl;
 } 
-char* move(vector<room*>* rooms, char currentRoom, char direction[]) {
-  vector<room*>::iterator move;
-  for(move = rooms->begin(); move != rooms->end(); move++) {
-    if(currentRoom == (*move)->getName()) {
-      map<char*, room*> exits;
+char* move(vector<Room*> &rooms, char* &currentRoom, char* &direction) {
+  vector<Room*>::iterator move;
+  for(move = rooms.begin(); move != rooms.end(); move++) {
+    if(strcmp(currentRoom, (*move)->getName()) == 0) {
+      map<char*, Room*> exits;
       exits = *(*move)->getExits();
-      map<char*, room*>::const_iterator map;
+      map<char*, Room*>::const_iterator map;
       for(map = exits.begin(); map != exits.end(); ++map) {
-	if(strcmp(*(map->first), direction) == 0) {
+	if(strcmp(map->first, direction) == 0) {
 	  char* destination;
-	  destination = (*map->second)->getName;
-	  return destination
+	  destination = ((*map).second)->getName();
+	  return destination;
 	}
       }
     }
   }
-  char* empty = "null";
+  char* empty = new char[2];
+  strcpy(empty, " ");
   return empty;
+}
+bool inventoryContains(vector<Item*> &playerInventory, char* &itemName) {
+  vector<Item*>::iterator playerInven;
+  for(playerInven = playerInventory.begin(); playerInven != playerInventory.end(); playerInven++) {
+    if(strcmp(itemName, (*playerInven)->getItemName()) == 0) {
+      return true;
+    }
+  }
+  return false;
 }

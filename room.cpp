@@ -6,8 +6,10 @@
 using namespace std;
 
 Room::Room(char* newName, char* newDescription, bool status) {
-  name = newName;
-  description = newDescription;
+  name = new char[20];
+  strcpy(name, newName);
+  description = new char[200];
+  strcpy(description, newDescription);
   clearStatus = status;
 }
 
@@ -22,17 +24,24 @@ map<char*, Room*>* Room::getExits() {
 char* Room::getName() {
   return name;
 }
+bool Room::getStatus() {
+  return clearStatus;
+}
 
 vector<Item*>* Room::getRoomInventory() {
   return &roomInventory;
 }
 
-void Room::setExit(map<char*, Room*> newExit) {
+void Room::setExits(map<char*, Room*> newExit) {
   exits = newExit;
 }
 void Room::setItem(Item* newItem) {
   roomInventory.push_back(newItem);
 }
-void Room::addExit(char* direction, Room* destination) {
-  exits.insert(*direction, *destination);
+void Room::removeItem(vector<Item*>::iterator oldItem) {
+  roomInventory.erase(oldItem);
+}
+void Room::clearRoom(char* newDescription) {
+  strcpy(description, newDescription);
+  clearStatus = true;
 }

@@ -16,11 +16,12 @@ class Room {
   char* getName();
   vector<Item*>* getRoomInventory(); 
   map<char*, Room*>* getExits();
+  bool getStatus();
 
-  void setExit(map<char*, Room*> newExit);
+  void setExits(map<char*, Room*> newExit);
   void setItem(Item* newItem);
-
-  void addExit(char* direction, Room* destination);
+  void removeItem(vector<Item*>::iterator oldItem);
+  void clearRoom(char* newDescription);
  private:
   char* description;
   map<char*, Room*> exits;
