@@ -19,15 +19,15 @@ int main() {
   vector<Room*> roomsList;
   vector<Item*> inventory;
   setRoom(roomsList);
+  
   char* potentialDescription = new char[200];
   char* potentialItemName = new char[10];
-  
   
   bool stillPlaying = true;
   char command[10];
   char* commandInput = new char[10];
   char* currentRoom = new char[25];
-  strcpy(currentRoom, "Dungeon Entrance");
+  strcpy(currentRoom, "Tunnel 6");
   
   cout << "Welcome to Dungeon Destroyer! You are trapped in a dungeon and you must collect all the items, have them in certain rooms to traverse through the dungeon. If you reach the boss room with all the items necessary (sword, bomb, shield, bow, potion)" << endl;
   cout << "The commands available to you are GO, GET, DROP, INVENTORY, QUIT." << endl;
@@ -38,30 +38,33 @@ int main() {
 	if(strcmp((*room)->getName(), "Laboratory") == 0 && (*room)->getStatus() == 0) {//if the room the player is in is the Laboratory and the laboratory isn't cleared
 	  strcpy(potentialItemName, "Sword");
 	  if(inventoryContains(inventory, potentialItemName) == true) {//if the player also has the sword, then they clear the room
-	    strcpy(potentialDescription, "The Beheaded Corpses of Zombies litter the floor, but the room is atleast safe.");
+	    strcpy(potentialDescription, "The Beheaded Corpses of Zombies slayed by your sword litter the floor, but the room is atleast safe.");
 	    (*room)->clearRoom(potentialDescription);
 	  }
 	}
 	else if(strcmp((*room)->getName(), "Graveyard") == 0 && (*room)->getStatus() == 0) {//if the room the player is in is the graveyard and the graveyard isn't cleared
 	  strcpy(potentialItemName, "Shield");
 	  if(inventoryContains(inventory, potentialItemName) == true) {//if the player also has the Shield, then they clear the room
-	    strcpy(potentialDescription, "The Beheaded Corpses of Zombies litter the floor, but the room is atleast safe.");
+	    strcpy(potentialDescription, "You block the arrows of the skeletons that occupy the graveyard and crush their bones to fine powder.");
 	    (*room)->clearRoom(potentialDescription);//change description and clear the room
 	  }
 	}
 	else if(strcmp((*room)->getName(), "Boss Room") == 0 && (*room)->getStatus() == 0) { //Boss Room Clear Condition
-	  
-	
+	  cout << inventory.size() << endl;
+	  if(inventory.size() >= 5) {//if you have all the items
+	    cout << "You block the demon lord's attack with your shield, throw the healing potion on it acting as poison on demons. You shoot a bomb arrow and slay the demon lord clearing the dungeon. Good Job!";
+	    return 0;
+	  }
+	}
       }
     }
-    printRoom(roomsList, currentRoom);
+    printRoom(roomsList, currentRoom);//print the room data of the player
     cout << "What would you like to do? (GO, GET, DROP, INVENTORY, QUIT)" << endl;
     cin >> command;
     if(strcmp(command, "GO") == 0) {
       cout << "Which Direction would you like to go of the exits?" << endl;
       cin >> commandInput;
       char* destination = move(roomsList, currentRoom, commandInput);
-      cout << destination << endl;
       if(strcmp(destination, " ") != 0) {
 	strcpy(currentRoom, destination);
       }
@@ -88,7 +91,7 @@ int main() {
   }
 }
 
-void setRoom(vector<Room*> &rooms) {
+void setRoom(vector<Room*> &rooms) {//intialize the rooms with their items and exits as well as names and description
   char* north = (char*)("north");
   char* east = (char*)("east");
   char* south = (char*)("south");
@@ -164,7 +167,7 @@ void setRoom(vector<Room*> &rooms) {
   strcpy(description, "It just an empty room. Why is this here? Its almost as if this is just here to complete a requirement of the dungen creation.");
   Room* emptyRoom = new Room(name, description, true);
 
-  strcpy(name, "Boos Room");
+  strcpy(name, "Boss Room");
   strcpy(description, "You need all the weapons you have collected on your journey to beat the boss and escape!");
   Room* bossRoom = new Room(name, description, false);
 
@@ -258,10 +261,10 @@ void setRoom(vector<Room*> &rooms) {
   rooms.push_back(bossRoom);
   cout << "Done intializing" << endl;
 }
-void printRoom(vector<Room*> &rooms, char* &currentRoom) {
+void printRoom(vector<Room*> &rooms, char* &currentRoom) {//prints the data of the room the player is currently in
   vector<Room*>::iterator room;
-  for(room = rooms.begin(); room != rooms.end(); room++) {
-    if(strcmp(currentRoom,(*room)->getName()) == 0) {
+  for(room = rooms.begin(); room != rooms.end(); room++) {//goes through all rooms to find the room the player is in
+    if(strcmp(currentRoom,(*room)->getName()) == 0) {//based on the name of rooms
       cout << "You are in the " << (*room)->getName() << "." << endl;
       cout << (*room)->getDescription() << endl;
       map<char*, Room*>::iterator exit;
