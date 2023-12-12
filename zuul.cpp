@@ -1,3 +1,9 @@
+//Neel Madala
+//12/11/2023
+//This program is a simple word game called Zuul, you must collect all the items after exploring the dungeon to defeat the demon king and escape
+//The user inputs commands and is able to control their player and move, pick up and drop items, and look at their inventory
+//Map of the dungeon here: https://docs.google.com/drawings/d/1C4ZLu9F7oKjfm3mi2CtK-IYUhvED-5U-d5u6Iy6GvKo/edit?usp=sharing
+
 #include <iostream>
 #include <cstring>
 #include <vector>
@@ -270,7 +276,7 @@ void printRoom(vector<Room*> &rooms, char* &currentRoom) {//prints the data of t
       map<char*, Room*>::iterator exit;
       cout << endl;
       cout << "Exits:" << endl;
-      for(exit = (*room)->getExits()->begin(); exit != (*room)->getExits()->end(); exit++) {
+      for(exit = (*room)->getExits()->begin(); exit != (*room)->getExits()->end(); exit++) {//goes through the exit map of the room
 	cout << " " << exit->first << endl;
       }
       cout << endl;
@@ -278,12 +284,12 @@ void printRoom(vector<Room*> &rooms, char* &currentRoom) {//prints the data of t
       cout << "Items in this room: " << endl;;
       int itemCount = 0;
       vector<Item*>::iterator items;
-      for(items = (*room)->getRoomInventory()->begin(); items != (*room)->getRoomInventory()->end(); items++){
+      for(items = (*room)->getRoomInventory()->begin(); items != (*room)->getRoomInventory()->end(); items++){//goes through the vector of the room
 	cout << " " << (*items)->getItemName() << endl;
 	itemCount++;
       }
-      if (itemCount == 0) {
-	cout << "No items in this room." << endl;
+      if (itemCount == 0) {//if no items
+	cout << "No items in this room." << endl << endl;
       }
       else {
 	cout << endl;
@@ -291,7 +297,7 @@ void printRoom(vector<Room*> &rooms, char* &currentRoom) {//prints the data of t
     }
   }
 }
-void printInventory(vector<Item*> &playerInventory) {
+void printInventory(vector<Item*> &playerInventory) {//prints out the player's inventory vector
   vector<Item*>::iterator inven;
   cout << "You Have: " << endl;
   for(inven = playerInventory.begin(); inven != playerInventory.end(); inven++) {
@@ -299,23 +305,27 @@ void printInventory(vector<Item*> &playerInventory) {
   }
   cout << endl;
 }
-void getItem(vector<Room*> &rooms, char* &currentRoom, char* &itemName, vector<Item*> &playerInventory) {
+void getItem(vector<Room*> &rooms, char* &currentRoom, char* &itemName, vector<Item*> &playerInventory) {//finds current room and then compares what item the player asks for and the inventory of the room
   vector<Room*>::iterator room;
-  for(room = rooms.begin(); room != rooms.end(); room++) {
-    if(strcmp(currentRoom,(*room)->getName()) == 0) {
+  for(room = rooms.begin(); room != rooms.end(); room++) {//find room
+    if(strcmp(currentRoom,(*room)->getName()) == 0 && (*room)->getStatus() == 1) {//matches room and makes sure the room is clear
       vector<Item*>::iterator roomInven;
-      for(roomInven = (*room)->getRoomInventory()->begin(); roomInven != (*room)->getRoomInventory()->end(); roomInven++) {
-	if(strcmp(itemName, (*roomInven)->getItemName()) == 0) {
+      for(roomInven = (*room)->getRoomInventory()->begin(); roomInven != (*room)->getRoomInventory()->end(); roomInven++) {//go through items of the room
+	if(strcmp(itemName, (*roomInven)->getItemName()) == 0) {//if this item is the one the player wants
 	  playerInventory.push_back(*roomInven);
 	  (*room)->removeItem(roomInven);
 	  return;
 	}
       }
     }
+    else if ((*room)->getStatus() == 0) {//if the room isn't clear block the player from picking up item
+      cout << "You are unable to pickup any items without clearing the room of danger first." << endl;
+      return;
+    }
   }
   cout << "That item is not here." << endl;
 }
-void dropItem(vector<Room*> &rooms, char* &currentRoom, char* &itemName, vector<Item*> &playerInventory) {
+void dropItem(vector<Room*> &rooms, char* &currentRoom, char* &itemName, vector<Item*> &playerInventory) {//same thing as getItem, but swap where item goes
  vector<Room*>::iterator room;
   for(room = rooms.begin(); room != rooms.end(); room++) {
     if(strcmp(currentRoom,(*room)->getName()) == 0) {
@@ -330,16 +340,17 @@ void dropItem(vector<Room*> &rooms, char* &currentRoom, char* &itemName, vector<
     }
   }
   cout << "You do not have that Item." << endl;
+  return;
 } 
-char* move(vector<Room*> &rooms, char* &currentRoom, char* &direction) {
+char* move(vector<Room*> &rooms, char* &currentRoom, char* &direction) {//find current room through name and then go through the rooms exits and find the destination of the direction 
   vector<Room*>::iterator move;
   for(move = rooms.begin(); move != rooms.end(); move++) {
     if(strcmp(currentRoom, (*move)->getName()) == 0) {
       map<char*, Room*> exits;
       exits = *(*move)->getExits();
       map<char*, Room*>::const_iterator map;
-      for(map = exits.begin(); map != exits.end(); ++map) {
-	if(strcmp(map->first, direction) == 0) {
+      for(map = exits.begin(); map != exits.end(); ++map) {//go through exits
+	if(strcmp(map->first, direction) == 0) {//matches which direction the player wants to go and the destination of that direction
 	  char* destination;
 	  destination = ((*map).second)->getName();
 	  return destination;
@@ -347,11 +358,12 @@ char* move(vector<Room*> &rooms, char* &currentRoom, char* &direction) {
       }
     }
   }
+  //returns set value if there is no destination
   char* empty = new char[2];
   strcpy(empty, " ");
   return empty;
 }
-bool inventoryContains(vector<Item*> &playerInventory, char* &itemName) {
+bool inventoryContains(vector<Item*> &playerInventory, char* &itemName) {//checks player inventory for an item given by the game
   vector<Item*>::iterator playerInven;
   for(playerInven = playerInventory.begin(); playerInven != playerInventory.end(); playerInven++) {
     if(strcmp(itemName, (*playerInven)->getItemName()) == 0) {
@@ -360,3 +372,5 @@ bool inventoryContains(vector<Item*> &playerInventory, char* &itemName) {
   }
   return false;
 }
+
+
