@@ -5,7 +5,7 @@
 
 using namespace std;
 
-Room::Room(char* newName, char* newDescription, bool status) {
+Room::Room(char* newName, char* newDescription, bool status) {//save name, description, and clear state
   name = new char[20];
   strcpy(name, newName);
   description = new char[200];
@@ -32,16 +32,16 @@ vector<Item*>* Room::getRoomInventory() {
   return &roomInventory;
 }
 
-void Room::setExits(map<char*, Room*> newExit) {
+void Room::setExits(map<char*, Room*> newExit) {//assigns exits to room
   exits = newExit;
 }
-void Room::setItem(Item* newItem) {
+void Room::setItem(Item* newItem) {//assigns items to room
   roomInventory.push_back(newItem);
 }
-void Room::removeItem(vector<Item*>::iterator oldItem) {
+void Room::removeItem(vector<Item*>::iterator oldItem) {//remove item from room
   roomInventory.erase(oldItem);
 }
-void Room::clearRoom(char* newDescription) {
+void Room::clearRoom(char* newDescription) {//change description and change clear status
   strcpy(description, newDescription);
   clearStatus = true;
 }

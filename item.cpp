@@ -4,10 +4,10 @@
 
 using namespace std;
 
-Item::Item(char* Name) {
+Item::Item(char* Name) {//item constructor
   name = new char[10];
   strcpy(name, Name);
 }
-char* Item::getItemName() {
+char* Item::getItemName() {//name getter
   return name;
 }
